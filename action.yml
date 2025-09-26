@@ -23,6 +23,10 @@ inputs:
     description: Initial version to use when no release tags are found in the repository
     default: v0.1.0
 
+  pre-release-version-glue:
+    description: Suffix glue to use for pre-release versions
+    default: '-'
+
 outputs:
   latest-release-tag:
     description: 'Latest release tag found in the repository'

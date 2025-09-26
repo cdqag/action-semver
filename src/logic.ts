@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import { context } from '@actions/github';
 import * as semver from 'semver';
 import * as cc from '@conventional-commits/parser';
 
@@ -57,4 +58,11 @@ export const getBumpTypeFromCommits = (
   }
 
   return bumpMajor ? 'major' : bumpMinor ? 'minor' : 'patch';
+};
+
+/**
+ * Suffix the version with a pre-release identifier based on the current commit SHA.
+ */
+export const suffixWithPreRelease = (version: string, preReleaseGlue: string): string => {
+  return `${version}${preReleaseGlue}${context.sha.substring(0, 7)}`;
 };

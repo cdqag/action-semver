@@ -91,4 +91,15 @@ export class GitHubClient {
     return listOfCommits;
   }
 
+  /**
+   * Get the default branch name of the repository.
+   */
+  async getDefaultBranchName(): Promise<string> {
+    const response = await this.octokit.rest.repos.get({
+      owner: this.repoOwner,
+      repo: this.repoName,
+    });
+    return response.data.default_branch;
+  }
+
 }

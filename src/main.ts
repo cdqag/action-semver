@@ -4,7 +4,7 @@ import * as cc from '@conventional-commits/parser';
 
 import { GitHubClient } from './github';
 import { Commit } from "./github/types";
-import { getBumpTypeFromCommits } from './logic';
+import { getBumpTypeFromCommits, suffixWithPreRelease } from './logic';
 import { getNotConventionalCommitsReactionEnumFromString } from './types';
 
 
@@ -16,7 +16,8 @@ export const main = async (
   githubToken: string,
   targetBranch: string,
   notConventionalCommitsReaction: string,
-  initReleaseVersion: string
+  initReleaseVersion: string,
+  preReleaseVersionGlue: string
 ) => {
   const notConventionalCommitsReactionEnum = getNotConventionalCommitsReactionEnumFromString(notConventionalCommitsReaction);
   const githubClient = new GitHubClient(githubToken, fullRepoName);
@@ -49,10 +50,9 @@ export const main = async (
         core.debug(`Getting list of commits between ${latestReleaseTag} and ${targetBranch}.`);
         commits = await githubClient.getListOfCommitsBetween(latestReleaseTag, targetBranch);
       } catch (error) {
-        core.setFailed(`Failed to get the list of commits between ${latestReleaseTag ?? 'the beginning'} and ${targetBranch}. Please ensure the target branch exists.`);
+        core.setFailed(`Failed to get the list of commits between ${latestReleaseTag} and ${targetBranch}. Please ensure the target branch exists.`);
         return;
       }
-
 
       if (commits.length === 0) {
         core.info('No new commits found since the latest release.');
@@ -89,11 +89,20 @@ export const main = async (
   core.info(`Current version: ${currentVersion}`);
   core.setOutput('current-version', currentVersion);
 
+  // Get major version before any pre-release suffix is added
+  const newMajorVersion = semver.major(newVersion);
+
+  // Get the default branch name
+  const defaultBranch = await githubClient.getDefaultBranchName();
+  if (targetBranch !== defaultBranch) {
+    // Pre-release
+    core.info(`Target branch (${targetBranch}) is not the default branch (${defaultBranch}). Suffixing version with pre-release identifier.`);
+    newVersion = suffixWithPreRelease(newVersion, preReleaseVersionGlue);
+  }
+
   core.info(`New version: ${newVersion}`);
   core.setOutput('new-version', newVersion);
 
-  // Get major version
-  const newMajorVersion = semver.major(newVersion);
   core.info(`New major version: ${newMajorVersion}`);
   core.setOutput('new-major-version', newMajorVersion.toString());
 }

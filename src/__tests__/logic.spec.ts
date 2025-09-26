@@ -1,12 +1,26 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import * as core from '@actions/core';
-import { noteHasBreakingChange, getBumpTypeFromCommits } from '../logic';
+import { context } from '@actions/github';
+import { noteHasBreakingChange, getBumpTypeFromCommits, suffixWithPreRelease } from '../logic';
 import { Commit } from '../github/types';
 import { NotConventionalCommitsReaction } from "../types";
 
 // Mock @actions/core
 jest.mock('@actions/core');
 const mockedCore = jest.mocked(core);
+
+// Mock @actions/github context
+jest.mock('@actions/github', () => {
+  const originalModule = jest.requireActual('@actions/github') as typeof import('@actions/github');
+  return {
+    __esModule: true,
+    ...originalModule,
+    context: {
+      ...originalModule.context,
+      sha: 'abcdef1234567890',
+    },
+  };
+});
 
 
 describe('noteHasBreakingChange', () => {
@@ -250,5 +264,14 @@ describe('getBumpTypeFromCommits', () => {
         "Commit message not in conventional-commits format: '   \n\t  '"
       );
     });
+  });
+});
+
+describe('suffixWithPreRelease', () => {
+  it('should suffix version with pre-release identifier', () => {
+    const version = '1.2.3';
+    const glue = '-rc.';
+    const result = suffixWithPreRelease(version, glue);
+    expect(result).toBe('1.2.3-rc.abcdef1');
   });
 });
