@@ -1,0 +1,58 @@
+name: 📦 Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: 'Version to release'
+        required: true
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yaml
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Normalize version
+        id: version
+        uses: cdqag/normalize-version@v1
+        with:
+          version: ${{ inputs.version }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+  
+      - name: Install dependencies
+        run: npm ci
+  
+      - name: Build
+        run: npm run build
+
+      - name: Configure git user
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: github-actions[bot]
+          email: github-actions[bot]@users.noreply.github.com
+
+      - name: Release dist to major version branch
+        uses: cdqag/release-to-branch@v1
+        with:
+          branch: ${{ steps.version.outputs.major }}
+          dirs: dist
+          files: 'action.yml LICENSE README.md'
+
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ github.token }}
+          commit: refs/heads/${{ steps.version.outputs.major }}
+          tag: ${{ steps.version.outputs.semver }}
