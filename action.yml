@@ -7,6 +7,10 @@ branding:
   color: 'green'
 
 inputs:
+  repository:
+    description: The repository to analyze in the format 'owner/repo'. If not provided, defaults to the current repository.
+    default: ${{ github.repository }}
+
   github-token:
     description: GitHub Token
     default: ${{ github.token }}

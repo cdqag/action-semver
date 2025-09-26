@@ -69,6 +69,7 @@ jobs:
 
 | Input | Description | Default | Required |
 |-------|-------------|---------|----------|
+| `repository` | The repository to analyze in the format 'owner/repo'. If not provided, defaults to the current repository. | `${{ github.repository }}` | ❌ |
 | `github-token` | GitHub Token for API access | `${{ github.token }}` | ❌ |
 | `target-branch` | Branch to analyze for commits | `${{ github.ref_name }}` | ❌ |
 | `not-conventional-commits-reaction` | How to handle non-conventional commits (`error`, `warn`, `silent`) | `warn` | ❌ |
