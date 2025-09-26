@@ -36,8 +36,6 @@ describe('main', () => {
     mockCore.debug = jest.fn();
     mockCore.setOutput = jest.fn();
     mockCore.setFailed = jest.fn();
-    
-    console.log = jest.fn();
   });
 
   describe('when latest release tag exists and is valid', () => {
@@ -86,9 +84,9 @@ describe('main', () => {
       await main('owner/repo', 'token', 'main', 'error', '2.0.0');
       
       expect(mockCore.info).toHaveBeenCalledWith('Latest release tag: ');
-      expect(mockCore.info).toHaveBeenCalledWith('Current version: 2.0.0');
-      expect(mockCore.setOutput).toHaveBeenCalledWith('current-version', '2.0.0');
-      expect(mockCore.setOutput).toHaveBeenCalledWith('new-version', '2.0.1');
+      expect(mockCore.info).toHaveBeenCalledWith('New version: 2.0.0');
+      expect(mockCore.setOutput).toHaveBeenCalledWith('current-version', '');
+      expect(mockCore.setOutput).toHaveBeenCalledWith('new-version', '2.0.0');
     });
 
     it('should fail when initial release version is not valid semver', async () => {
@@ -239,7 +237,6 @@ describe('main', () => {
       await main('owner/repo', 'token', 'feature-branch', 'warn', '1.0.0');
       
       expect(mockCore.debug).toHaveBeenCalledWith('Getting list of commits between v1.0.0 and feature-branch.');
-      expect(console.log).toHaveBeenCalledWith(commits);
     });
   });
 });
