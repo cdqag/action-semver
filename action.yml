@@ -9,11 +9,11 @@ branding:
 inputs:
   github-token:
     description: GitHub Token
-    required: true
+    default: ${{ github.token }}
 
   target-branch:
     description: The branch to use when fetching list of commits to compare against
-    default: master
+    default: ${{ github.ref_name }}
 
   not-conventional-commits-reaction:
     description: 'Whether to exit with an error, warning or silently when encountering a commit that does not follow conventional commit format. Available options: error, warn, silent'
