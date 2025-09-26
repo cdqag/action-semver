@@ -47,31 +47,33 @@ export const main = async (
     }
   }
 
+  // Define a variable to hold the determined bump type
+  let bumpType: semver.ReleaseType | null = null;
+
   core.info(`Latest release tag: ${latestReleaseTag ?? ''}`);
   core.setOutput('latest-release-tag', latestReleaseTag ?? '');
 
   core.info(`Current version: ${currentVersion}`);
   core.setOutput('current-version', currentVersion);
 
-  // Get the list of commits between the latest release tag and the target branch
-  let commits: Commit[] = [];
-  try {
-    core.debug(`Getting list of commits between ${latestReleaseTag} and ${targetBranch}.`);
-    commits = await githubClient.getListOfCommitsBetween(latestReleaseTag, targetBranch);
-    console.log(commits);
-  } catch (error) {
-    core.setFailed(`Failed to get the list of commits between ${latestReleaseTag ?? 'the beginning'} and ${targetBranch}. Please ensure the target branch exists.`);
-    return;
-  }
+  if (latestReleaseTag) {
+    // Get the list of commits between the latest release tag and the target branch
+    let commits: Commit[] = [];
+    try {
+      core.debug(`Getting list of commits between ${latestReleaseTag} and ${targetBranch}.`);
+      commits = await githubClient.getListOfCommitsBetween(latestReleaseTag, targetBranch);
+    } catch (error) {
+      core.setFailed(`Failed to get the list of commits between ${latestReleaseTag ?? 'the beginning'} and ${targetBranch}. Please ensure the target branch exists.`);
+      return;
+    }
 
-  // Define a variable to hold the determined bump type
-  let bumpType: semver.ReleaseType | null = null;
 
-  if (commits.length === 0) {
-    core.info('No new commits found since the latest release.');
-  } else {
-    core.info(`Found ${commits.length} commits since the latest release.`);
-    bumpType = getBumpTypeFromCommits(commits, notConventionalCommitsReactionEnum);
+    if (commits.length === 0) {
+      core.info('No new commits found since the latest release.');
+    } else {
+      core.info(`Found ${commits.length} commits since the latest release.`);
+      bumpType = getBumpTypeFromCommits(commits, notConventionalCommitsReactionEnum);
+    }
   }
 
   if (!bumpType) {
