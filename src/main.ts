@@ -94,9 +94,10 @@ export const main = async (
 
   // Get the default branch name
   const defaultBranch = await githubClient.getDefaultBranchName();
-  if (targetBranch !== defaultBranch) {
+  const defaultBranchRef = `refs/heads/${defaultBranch}`;
+  if (targetBranch !== defaultBranchRef) {
     // Pre-release
-    core.info(`Target branch (${targetBranch}) is not the default branch (${defaultBranch}). Suffixing version with pre-release identifier.`);
+    core.info(`Target branch (${targetBranch}) is not the default branch (${defaultBranchRef}). Suffixing version with pre-release identifier.`);
     newVersion = suffixWithPreRelease(newVersion, preReleaseVersionGlue);
   }
 
