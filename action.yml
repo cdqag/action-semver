@@ -17,7 +17,7 @@ inputs:
 
   target-branch:
     description: The branch to use when fetching list of commits to compare against
-    default: ${{ github.ref_name }}
+    default: ${{ github.ref }}
 
   not-conventional-commits-reaction:
     description: 'Whether to exit with an error, warning or silently when encountering a commit that does not follow conventional commit format. Available options: error, warn, silent'
