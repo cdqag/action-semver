@@ -14,7 +14,7 @@ import { getNotConventionalCommitsReactionEnumFromString } from './types';
 export const main = async (
   fullRepoName: string,
   githubToken: string,
-  targetBranch: string,
+  targetBranchRef: string,
   notConventionalCommitsReaction: string,
   initReleaseVersion: string,
   preReleaseVersionGlue: string
@@ -47,10 +47,10 @@ export const main = async (
       // Get the list of commits between the latest release tag and the target branch
       let commits: Commit[] = [];
       try {
-        core.debug(`Getting list of commits between ${latestReleaseTag} and ${targetBranch}.`);
-        commits = await githubClient.getListOfCommitsBetween(latestReleaseTag, targetBranch);
+        core.debug(`Getting list of commits between ${latestReleaseTag} and ${targetBranchRef}.`);
+        commits = await githubClient.getListOfCommitsBetween(latestReleaseTag, targetBranchRef);
       } catch (error) {
-        core.setFailed(`Failed to get the list of commits between ${latestReleaseTag} and ${targetBranch}. Please ensure the target branch exists.`);
+        core.setFailed(`Failed to get the list of commits between ${latestReleaseTag} and ${targetBranchRef}. Please ensure the target branch exists.`);
         return;
       }
 
@@ -95,9 +95,9 @@ export const main = async (
   // Get the default branch name
   const defaultBranch = await githubClient.getDefaultBranchName();
   const defaultBranchRef = `refs/heads/${defaultBranch}`;
-  if (targetBranch !== defaultBranchRef) {
+  if (targetBranchRef !== defaultBranchRef) {
     // Pre-release
-    core.info(`Target branch (${targetBranch}) is not the default branch (${defaultBranchRef}). Suffixing version with pre-release identifier.`);
+    core.info(`Target ref (${targetBranchRef}) is not the default branch ref (${defaultBranchRef}). Suffixing version with pre-release identifier.`);
     newVersion = suffixWithPreRelease(newVersion, preReleaseVersionGlue);
   }
 

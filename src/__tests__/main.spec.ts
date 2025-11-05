@@ -64,7 +64,7 @@ describe('main', () => {
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       mockGetBumpTypeFromCommits.mockReturnValue('minor');
       
-      await main('owner/repo', 'token', 'main', 'warn', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'warn', '1.0.0', '-');
       
       expect(mockCore.info).toHaveBeenCalledWith('Latest release tag: v1.2.3');
       expect(mockCore.info).toHaveBeenCalledWith('Current version: 1.2.3');
@@ -79,7 +79,7 @@ describe('main', () => {
       mockGitHubClientInstance.getLatestReleaseTag.mockResolvedValue(invalidTag);
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       
-      await main('owner/repo', 'token', 'main', 'warn', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'warn', '1.0.0', '-');
       
       expect(mockCore.setFailed).toHaveBeenCalledWith(
         'Latest release tag (invalid-tag) is not a valid semver version. Please ensure your latest release tag follows semver format.'
@@ -96,7 +96,7 @@ describe('main', () => {
       mockGitHubClientInstance.getLatestReleaseTag.mockResolvedValue(null);
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       
-      await main('owner/repo', 'token', 'main', 'error', '2.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'error', '2.0.0', '-');
       
       expect(mockCore.info).toHaveBeenCalledWith('Latest release tag: ');
       expect(mockCore.info).toHaveBeenCalledWith('New version: 2.0.0');
@@ -108,7 +108,7 @@ describe('main', () => {
       mockGitHubClientInstance.getLatestReleaseTag.mockResolvedValue(null);
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       
-      await main('owner/repo', 'token', 'main', 'warn', 'invalid-version', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'warn', 'invalid-version', '-');
       
       expect(mockCore.setFailed).toHaveBeenCalledWith(
         'No valid latest release tag found and the provided initial version (invalid-version) is not a valid semver version.'
@@ -125,7 +125,7 @@ describe('main', () => {
       mockGitHubClientInstance.getListOfCommitsBetween.mockResolvedValue([]);
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       
-      await main('owner/repo', 'token', 'main', 'warn', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'warn', '1.0.0', '-');
       
       expect(mockCore.info).toHaveBeenCalledWith('No new commits found since the latest release.');
       expect(mockCore.info).toHaveBeenCalledWith('No conventional commits found. Bumping patch version.');
@@ -143,7 +143,7 @@ describe('main', () => {
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       mockGetBumpTypeFromCommits.mockReturnValue('minor');
       
-      await main('owner/repo', 'token', 'develop', 'ignore', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/develop', 'ignore', '1.0.0', '-');
       
       expect(mockCore.info).toHaveBeenCalledWith('Found 2 commits since the latest release.');
       expect(mockGetBumpTypeFromCommits).toHaveBeenCalledWith(commits, NotConventionalCommitsReaction.IGNORE);
@@ -161,7 +161,7 @@ describe('main', () => {
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       mockGetBumpTypeFromCommits.mockReturnValue('major');
       
-      await main('owner/repo', 'token', 'main', 'error', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'error', '1.0.0', '-');
       
       expect(mockCore.info).toHaveBeenCalledWith('Bump type: major');
       expect(mockCore.setOutput).toHaveBeenCalledWith('new-version', '2.0.0');
@@ -173,10 +173,10 @@ describe('main', () => {
       mockGitHubClientInstance.getListOfCommitsBetween.mockRejectedValue(error);
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       
-      await main('owner/repo', 'token', 'main', 'warn', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'warn', '1.0.0', '-');
       
       expect(mockCore.setFailed).toHaveBeenCalledWith(
-        'Failed to get the list of commits between v1.0.0 and main. Please ensure the target branch exists.'
+        'Failed to get the list of commits between v1.0.0 and refs/heads/main. Please ensure the target branch exists.'
       );
     });
 
@@ -189,7 +189,7 @@ describe('main', () => {
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       mockGetBumpTypeFromCommits.mockReturnValue(null as any);
       
-      await main('owner/repo', 'token', 'main', 'warn', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'warn', '1.0.0', '-');
       
       expect(mockCore.info).toHaveBeenCalledWith('No conventional commits found. Bumping patch version.');
       expect(mockCore.info).toHaveBeenCalledWith('Bump type: patch');
@@ -205,7 +205,7 @@ describe('main', () => {
     });
 
     it('should calculate patch version correctly', async () => {
-      await main('owner/repo', 'token', 'main', 'warn', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'warn', '1.0.0', '-');
       
       expect(mockCore.setOutput).toHaveBeenCalledWith('new-version', '2.5.11');
       expect(mockCore.setOutput).toHaveBeenCalledWith('new-major-version', '2');
@@ -220,7 +220,7 @@ describe('main', () => {
     });
 
     it('should set all required outputs', async () => {
-      await main('owner/repo', 'token', 'main', 'warn', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'warn', '1.0.0', '-');
       
       expect(mockCore.setOutput).toHaveBeenCalledWith('latest-release-tag', 'v3.1.4');
       expect(mockCore.setOutput).toHaveBeenCalledWith('current-version', '3.1.4');
@@ -232,7 +232,7 @@ describe('main', () => {
       mockGitHubClientInstance.getLatestReleaseTag.mockResolvedValue(null);
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       
-      await main('owner/repo', 'token', 'main', 'warn', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'warn', '1.0.0', '-');
       
       expect(mockCore.setOutput).toHaveBeenCalledWith('latest-release-tag', '');
     });
@@ -244,7 +244,7 @@ describe('main', () => {
       mockGitHubClientInstance.getListOfCommitsBetween.mockResolvedValue([]);
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       
-      await main('myorg/myrepo', 'gh_token_123', 'main', 'warn', '1.0.0', '-');
+      await main('myorg/myrepo', 'gh_token_123', 'refs/heads/main', 'warn', '1.0.0', '-');
       
       expect(mockGitHubClient).toHaveBeenCalledWith('gh_token_123', 'myorg/myrepo');
     });
@@ -262,9 +262,9 @@ describe('main', () => {
       mockGetBumpTypeFromCommits.mockReturnValue('patch');
       mockSuffixWithPreRelease.mockReturnValue('1.0.1-abc1234');
       
-      await main('owner/repo', 'token', 'feature-branch', 'warn', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/feature-branch', 'warn', '1.0.0', '-');
       
-      expect(mockCore.debug).toHaveBeenCalledWith('Getting list of commits between v1.0.0 and feature-branch.');
+      expect(mockCore.debug).toHaveBeenCalledWith('Getting list of commits between v1.0.0 and refs/heads/feature-branch.');
     });
   });
 
@@ -278,9 +278,9 @@ describe('main', () => {
     it('should suffix version with pre-release identifier when target branch is not default', async () => {
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       
-      await main('owner/repo', 'token', 'feature-branch', 'warn', '1.0.0', '-');
-      
-      expect(mockCore.info).toHaveBeenCalledWith('Target branch (feature-branch) is not the default branch (main). Suffixing version with pre-release identifier.');
+      await main('owner/repo', 'token', 'refs/heads/feature-branch', 'warn', '1.0.0', '-');
+
+      expect(mockCore.info).toHaveBeenCalledWith('Target ref (refs/heads/feature-branch) is not the default branch ref (refs/heads/main). Suffixing version with pre-release identifier.');
       expect(mockSuffixWithPreRelease).toHaveBeenCalledWith('1.0.1', '-');
       expect(mockCore.setOutput).toHaveBeenCalledWith('new-version', '1.0.1-abc1234');
     });
@@ -288,7 +288,7 @@ describe('main', () => {
     it('should not suffix version when target branch is the default branch', async () => {
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       
-      await main('owner/repo', 'token', 'main', 'warn', '1.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/main', 'warn', '1.0.0', '-');
       
       expect(mockSuffixWithPreRelease).not.toHaveBeenCalled();
       expect(mockCore.setOutput).toHaveBeenCalledWith('new-version', '1.0.1');
@@ -298,7 +298,7 @@ describe('main', () => {
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('master');
       mockSuffixWithPreRelease.mockReturnValue('1.0.1.abc1234');
       
-      await main('owner/repo', 'token', 'develop', 'warn', '1.0.0', '.');
+      await main('owner/repo', 'token', 'refs/heads/develop', 'warn', '1.0.0', '.');
       
       expect(mockSuffixWithPreRelease).toHaveBeenCalledWith('1.0.1', '.');
       expect(mockCore.setOutput).toHaveBeenCalledWith('new-version', '1.0.1.abc1234');
@@ -309,7 +309,7 @@ describe('main', () => {
       mockGitHubClientInstance.getDefaultBranchName.mockResolvedValue('main');
       mockSuffixWithPreRelease.mockReturnValue('2.0.0-abc1234');
       
-      await main('owner/repo', 'token', 'feature-branch', 'warn', '2.0.0', '-');
+      await main('owner/repo', 'token', 'refs/heads/feature-branch', 'warn', '2.0.0', '-');
       
       expect(mockSuffixWithPreRelease).toHaveBeenCalledWith('2.0.0', '-');
       expect(mockCore.setOutput).toHaveBeenCalledWith('new-version', '2.0.0-abc1234');
