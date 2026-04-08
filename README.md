@@ -42,7 +42,7 @@ jobs:
     steps:
       - name: Determine Version
         id: semver
-        uses: cdqag/action-semver@v1
+        uses: cdqag/action-semver@v2
 
       - name: Print Versions
         run: |
@@ -56,7 +56,7 @@ jobs:
 ```yaml
       - name: Determine Version
         id: semver
-        uses: cdqag/action-semver@v1
+        uses: cdqag/action-semver@v2
         with:
           github-token: ${{ secrets.CUSTOM_TOKEN }}
           target-branch: ${{ github.ref_name }}
