@@ -143,10 +143,16 @@ Configure the `not-conventional-commits-reaction` input to control how non-conve
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
-## License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
 ## Support
 
 If you encounter any problems or have questions, please [open an issue](https://github.com/cdqag/action-semver/issues) on GitHub.
+
+## About Creator
+
+![CDQ Logo](https://www.cdq.com/themes/custom/gavias_nonid/logo.svg)
+
+This action has been created and is maitained by [CDQ - Data Quality Solutions &amp; Services for Master Data](https://www.cdq.com/).
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
